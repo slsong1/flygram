@@ -6,7 +6,7 @@ import scipy.stats as stats
 import statsmodels.formula.api as smf
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
-root_dir = '/Users/sophiasong/Documents/KaunLab/flygram_analysis/'
+root_dir = '/Users/sophiasong/Documents/KaunLab/flygram/flygram_analysis/'
 
 def convert_excel_to_csv(excel_directory, csv_directory):
     for file in os.listdir(excel_directory):
@@ -67,17 +67,17 @@ def tukey_test(df):
     print(tukey.summary())
 
 if __name__=="__main__":
-    #convert_excel_to_csv('/Users/sophiasong/Documents/excel_flygram_data/', '/Users/sophiasong/Documents/csv_flygram_data/')
+    convert_excel_to_csv('/Users/sophiasong/Documents/KaunLab/flygram/flygram_analysis/excel_flygram_data/', '/Users/sophiasong/Documents/KaunLab/flygram/flygram_analysis/csv_flygram_data/')
 
     baseline_df, group_name = get_timepoint(root_dir + 'csv_flygram_data/', 0, 30)
 
     baseline_df.to_csv(root_dir + 'processed_flygram_data/{file_name}_{timepoint}.csv'.format(file_name=group_name, timepoint='baseline'), index=False)
 
-    ethanol_df, group_name = get_timepoint(root_dir + '/csv_flygram_data/', 29, 90)
+    ethanol_df, group_name = get_timepoint(root_dir + 'csv_flygram_data/', 29, 90)
     ethanol_df.to_csv(
         root_dir + 'processed_flygram_data/{file_name}_{timepoint}.csv'.format(file_name=group_name,
                                                                                 timepoint='ethanol'), index=False)
-    recovery_df, group_name = get_timepoint(root_dir + '/csv_flygram_data/', 89, -1)
+    recovery_df, group_name = get_timepoint(root_dir + 'csv_flygram_data/', 89, -1)
     recovery_df.to_csv(
         root_dir + 'processed_flygram_data/{file_name}_{timepoint}.csv'.format(file_name=group_name,
                                                                                 timepoint='recovery'), index=False)
