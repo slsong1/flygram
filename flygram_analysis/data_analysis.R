@@ -38,13 +38,18 @@ get_anova_stats = function(file_path) {
   return (df)
   
 }
-
+print ("********")
 print ("Baseline")
-baseline_df = get_anova_stats('~/Documents/KaunLab/flygram_analysis/processed_flygram_data/109B_baseline.csv')
+print ("********")
+baseline_df = get_anova_stats('~/Documents/KaunLab/flygram/flygram_analysis/processed_flygram_data/109B_baseline.csv')
+print ("********")
 print ("Ethanol")
-ethanol_df = get_anova_stats('~/Documents/KaunLab/flygram_analysis/processed_flygram_data/109B_ethanol.csv')
+print ("********")
+ethanol_df = get_anova_stats('~/Documents/KaunLab/flygram/flygram_analysis/processed_flygram_data/109B_ethanol.csv')
+print ("********")
 print ("Recovery")
-recovery_df = get_anova_stats('~/Documents/KaunLab/flygram_analysis/processed_flygram_data/109B_recovery.csv')
+print ("********")
+recovery_df = get_anova_stats('~/Documents/KaunLab/flygram/flygram_analysis/processed_flygram_data/109B_recovery.csv')
 
 #Make a boxplot of the data
 # p = ggplot(baseline_df, aes(x=group, y=activity, color=group)) +geom_boxplot()
