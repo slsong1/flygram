@@ -9,7 +9,7 @@ from statsmodels.stats.multicomp import pairwise_tukeyhsd
 root_dir = '/Users/sophiasong/Documents/KaunLab/flygram/flygram_analysis/'
 
 def convert_excel_to_csv(excel_directory, csv_directory):
-    for file in os.listdir(excel_directory):
+    for file in fnmatch.filter(os.listdir(excel_directory), '*.xls'):
         data_xls = pd.read_excel(excel_directory+file, 'Sheet1', index_col=None)
         data_xls.to_csv('{}/{}.csv'.format(csv_directory, file.replace(" ", "_").replace('.xls', "")), encoding='utf-8', index=False)
 
@@ -84,4 +84,3 @@ if __name__=="__main__":
     get_anova_stats(baseline_df)
     get_anova_stats(ethanol_df)
     get_anova_stats(recovery_df)
-
