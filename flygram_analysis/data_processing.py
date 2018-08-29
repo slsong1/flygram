@@ -77,7 +77,6 @@ def tukey_test(df):
 
 if __name__=="__main__":
 
-    #TODO: Add functionality to take in multiple excel files in the directories
 
     convert_excel_to_csv('/Users/sophiasong/Documents/KaunLab/flygram/flygram_analysis/excel_flygram_data/', '/Users/sophiasong/Documents/KaunLab/flygram/flygram_analysis/csv_flygram_data/')
     groups = get_groups(root_dir + 'csv_flygram_data/')
