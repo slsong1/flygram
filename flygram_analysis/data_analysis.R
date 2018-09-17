@@ -19,8 +19,12 @@ get_anova_stats = function(file_path) {
     print ("Variances are homogeneous by Levene's test")
     print(paste0("Levene's p_value: ", l_p_value))
   }
-
+  #TODO: Welch's T-test for non-homogenous variances
   #Do a one-way ANOVA 
+  #TODO within subject, with repeated measures (test of sphericity - Mauchly's, greenhouse Geisser correction) 
+  #TODO: planned contrasts
+  #TODO: Bonferroni post hoc 
+  #TODO: mixed models with repeated measures (between subject, within subject) 
   anov = aov(activity ~ group, data = df)
   
   summary = summary(anov)
@@ -28,6 +32,7 @@ get_anova_stats = function(file_path) {
   print(paste0("ANOVA p_value: ", p_value))
   # Do a post-hoc test
   if (p_value < 0.05) {
+    print ("Tukey's test results:")
     tukey = TukeyHSD(anov)
     tukey_df = as.data.frame(tukey$group)
     print (tukey_df[tukey_df["p adj"] < 0.01,,drop=FALSE])
