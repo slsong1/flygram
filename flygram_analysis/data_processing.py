@@ -22,6 +22,11 @@ def convert_excel_to_csv(excel_directory, csv_directory):
         data_xls.to_csv('{}/{}.csv'.format(csv_directory, file.replace(" ", "_").replace('.xls', "")), encoding='utf-8', index=False)
 
 def get_group_names(directory):
+    """
+
+    :param directory:
+    :return:
+    """
     group_list = []
     for file in fnmatch.filter(os.listdir(directory), '*.csv'):
 
@@ -29,52 +34,86 @@ def get_group_names(directory):
         group_list.append(file_name)
     return group_list
 
-def get_group_df(group):
+def get_group_df(group, genotype):
+    """
 
-    column_list = ['time', 'group', 'activity']
+    :param group:
+    :param genotype:
+    :return:
+    """
+    print (genotype)
+    inf = genotype.split("_")
+    info = "_" + inf[1] + "_" + inf[2]
+    genotype_name = genotype.split("_")[0]
+    if ('yw.' + genotype_name) in group:
+        factor = 1
+    if ('yw.shi' + genotype_name) in group:
+        factor = 2
+    if ('shi.' + genotype_name) in group:
+        factor = 3
 
-    baseline_df = pd.DataFrame(columns=column_list)
-    ethanol_df = pd.DataFrame(columns=column_list)
-    recovery_df = pd.DataFrame(columns=column_list)
+    total_df = pd.DataFrame()
 
-    print (group)
-    df = pd.read_csv(root_dir + 'csv_flygram_data/' + genotype + '/' + group + '_alldata.csv')
+    df = pd.read_csv(root_dir + 'csv_flygram_data/' + genotype + '/' + group + info + '_alldata.csv')
 
-    time_series = pd.Series(data=list(map(lambda x: int(x.split(',')[0].lstrip('(')), df.iloc[:,0])), name='time_elapsed')
-    df.update(time_series)
-    baseline_activity = df.iloc[14, 1:]
+    df = df.iloc[:, 1:]
 
-    baseline_df['activity'] = baseline_activity
-    baseline_df['time'] = 'baseline'
-    baseline_df['group'] = group
+    total_df = df.transpose()
+    cols = list(total_df.columns.values)
+    total_df['group'] = pd.Series(group, index=total_df.index)
+    total_df['factor'] = pd.Series(factor, index=total_df.index)
 
-    ethanol_activity = df.iloc[59, 1:]
-    ethanol_df['activity'] = ethanol_activity
-    ethanol_df['time'] = 'ethanol'
-    ethanol_df['group'] = group
 
-    recovery_activity = df.iloc[109, 1:]
-    recovery_df['activity'] = recovery_activity
-    recovery_df['time'] = 'recovery'
-    recovery_df['group'] = group
+    total_df = total_df[['group', 'factor'] + cols]
 
-    group_df = pd.concat([baseline_df, ethanol_df, recovery_df])
-    return group, group_df
+    return group, total_df
+
+def sort_list(genotype, ls):
+    """
+
+    :param genotype:
+    :param ls:
+    :return:
+    """
+    genotype_name = genotype.split("_")[0]
+    print (ls)
+    print ("sorting")
+    new_list = [0, 0, 0]
+    for item in ls:
+        if ('yw.'+genotype_name) in item:
+            new_list.insert(0, item)
+        if ('yw.shi' + genotype_name) in item:
+            new_list.insert(1, item)
+        if ('shi.'+genotype_name) in item:
+            new_list.insert(2, item)
+
+    new_list = list(filter(lambda a: a != 0, new_list))
+    return new_list
+
 
 if __name__=="__main__":
 
     subfolders = os.walk(root_dir + 'excel_flygram_data/')
     subfolders = [i for i in subfolders if (root_dir + 'excel_flygram_data/') not in i]
     genotypes = list(map(lambda x: os.path.basename(os.path.normpath(x)), [x[0] for x in subfolders]))
-    for genotype in genotypes:
 
+    for genotype in genotypes:
+        print (genotype)
         convert_excel_to_csv(root_dir + 'excel_flygram_data/' + genotype + '/', root_dir + 'csv_flygram_data/' + genotype + '/')
         group_list = get_group_names(root_dir + 'csv_flygram_data/' + genotype + '/')
+        print (group_list)
+        sorted= sort_list(genotype, group_list)
 
         total_df = pd.DataFrame()
         group_name_1 = ''
-        for group in group_list:
-            group_name, group_df = get_group_df(group)
+
+        for group in sorted:
+            print ("group: {}".format(group))
+            group_name, group_df = get_group_df(group, genotype)
             total_df = pd.concat([total_df, group_df])
 
-        total_df.to_csv(root_dir + 'processed_flygram_data/' + genotype + '/' + 'processed_{file_name}.csv'.format(file_name=genotype), index=False)
+        header = pd.DataFrame(pd.Series(range(0, total_df.shape[1] * 10, 10)), list(total_df.columns.values)).transpose()
+        total_df = header.append(total_df)
+        total_df.to_csv(root_dir + 'processed_flygram_data/' + genotype + '/' + 'processed_{file_name}.csv'.format(file_name=genotype), header=False, index=False)
+
+#TODO: Path manager to make directories and automatically combine them
